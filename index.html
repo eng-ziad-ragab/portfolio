@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ziad Ragab — Back-End Laravel Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080C12;
+      --surface: #0D1420;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.07);
+      --accent: #00E5A0;
+      --accent2: #0099FF;
+      --accent3: #7C3AED;
+      --text: #E8EDF5;
+      --muted: #6B7A99;
+      --card: #0F1926;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ─── GLOW BLOBS ─── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; }
+    .blob-2 { width: 500px; height: 500px; background: var(--accent2); bottom: 10%; right: -150px; }
+    .blob-3 { width: 400px; height: 400px; background: var(--accent3); top: 50%; left: 40%; }
+
+    /* ─── TYPOGRAPHY ─── */
+    h1, h2, h3, h4 { font-family: 'Syne', sans-serif; font-weight: 800; line-height: 1.1; }
+    code, .mono { font-family: 'DM Mono', monospace; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 60px;
+      background: rgba(8,12,18,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ─── SECTIONS ─── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+    }
+    .hero-inner { max-width: 900px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,229,160,0.08);
+      border: 1px solid rgba(0,229,160,0.2);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .hero-title {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      animation: fadeUp 0.8s ease 0.1s both;
+    }
+    .hero-title .accent { color: var(--accent); }
+    .hero-role {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: var(--accent2);
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.4s both;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #000;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,160,0.3); }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 72px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.8s ease 0.5s both;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION HEADERS ─── */
+    .section-wrap { padding: 100px 0; }
+    .section-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    .section-desc { color: var(--muted); max-width: 520px; font-size: 1.05rem; }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-top: 60px;
+    }
+    .about-text p { color: var(--muted); line-height: 1.9; margin-bottom: 20px; font-size: 1.05rem; }
+    .about-text p strong { color: var(--text); }
+    .about-highlights { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .highlight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .highlight-icon {
+      width: 36px; height: 36px;
+      background: rgba(0,229,160,0.1);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+    .highlight-item h4 { font-size: 0.9rem; margin-bottom: 2px; font-family: 'Syne', sans-serif; }
+    .highlight-item p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+    /* ─── EXPERIENCE ─── */
+    .exp-timeline { margin-top: 60px; position: relative; }
+    .exp-timeline::before {
+      content: '';
+      position: absolute;
+      left: 22px; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+    .exp-item {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 52px;
+      padding-left: 0;
+    }
+    .exp-dot-wrap {
+      position: relative;
+      flex-shrink: 0;
+      width: 46px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .exp-dot {
+      width: 14px; height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-top: 6px;
+      box-shadow: 0 0 0 4px rgba(0,229,160,0.15);
+      flex-shrink: 0;
+    }
+    .exp-body {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      flex: 1;
+      transition: border-color 0.3s;
+    }
+    .exp-body:hover { border-color: rgba(0,229,160,0.25); }
+    .exp-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 20px; }
+    .exp-company {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .exp-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      margin-top: 4px;
+    }
+    .exp-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 4px 12px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .exp-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .exp-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .exp-list li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 0.75rem;
+    }
+    .exp-list li strong { color: var(--text); }
+
+    /* ─── PROJECTS ─── */
+    #projects { background: var(--surface); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 60px;
+    }
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,160,0.04) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .project-card:hover { border-color: rgba(0,229,160,0.3); transform: translateY(-4px); }
+    .project-card:hover::before { opacity: 1; }
+    .project-card.featured {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .project-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+    .project-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .project-problem {
+      font-size: 0.82rem;
+      color: var(--accent2);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 16px;
+    }
+    .project-desc { color: var(--muted); font-size: 0.95rem; margin-bottom: 20px; }
+    .project-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .feature-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .project-stack { display: flex; flex-wrap: wrap; gap: 8px; }
+    .stack-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      background: rgba(0,229,160,0.08);
+      border: 1px solid rgba(0,229,160,0.15);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .project-visual {
+      background: var(--surface2);
+      border-radius: 12px;
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+    .arch-diagram { display: flex; flex-direction: column; gap: 10px; }
+    .arch-layer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+    }
+    .arch-layer.l1 { background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.2); }
+    .arch-layer.l2 { background: rgba(0,153,255,0.08); color: var(--accent2); border: 1px solid rgba(0,153,255,0.15); }
+    .arch-layer.l3 { background: rgba(124,58,237,0.1); color: #A78BFA; border: 1px solid rgba(124,58,237,0.2); }
+    .arch-layer.l4 { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+    .arch-arrow { text-align: center; color: var(--muted); font-size: 0.7rem; }
+
+    /* ─── ARCHITECTURE ─── */
+    #architecture { background: var(--bg); }
+    .arch-principles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 60px;
+    }
+    .principle-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+    .principle-card:hover { border-color: rgba(0,229,160,0.25); }
+    .principle-icon {
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+    }
+    .principle-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .principle-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .patterns-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .pattern-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .pattern-pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.05); }
+
+    /* ─── SKILLS ─── */
+    #skills { background: var(--surface); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 60px;
+    }
+    .skill-group {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+    }
+    .skill-group-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .skill-list { display: flex; flex-direction: column; gap: 14px; }
+    .skill-item { display: flex; flex-direction: column; gap: 6px; }
+    .skill-name {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    .skill-level { font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .skill-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1s ease;
+    }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--bg); }
+    .contact-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-box::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: -80px;
+      width: 300px; height: 300px;
+      background: var(--accent);
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.06;
+    }
+    .contact-title {
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      margin-bottom: 16px;
+      letter-spacing: -0.03em;
+    }
+    .contact-sub { color: var(--muted); margin-bottom: 32px; font-size: 1rem; }
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text);
+      text-decoration: none;
+      padding: 14px 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+    .contact-link-icon { font-size: 1.1rem; }
+    .contact-form { display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+    .form-input, .form-textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { height: 120px; resize: vertical; }
+    .form-submit {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .form-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      position: relative;
+      z-index: 1;
+    }
+    footer span { color: var(--accent); }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .container { padding: 0 24px; }
+      .about-grid, .contact-box { grid-template-columns: 1fr; gap: 40px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+      .arch-principles { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .patterns-row { grid-template-columns: repeat(2, 1fr); }
+      .hero-stats { gap: 28px; }
+      .contact-box { padding: 36px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">ZR<span>.</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#skills">Skills</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Let's Talk</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-badge">Available for new opportunities</div>
+        <h1 class="hero-title">Ziad <span class="accent">Ragab</span></h1>
+        <div class="hero-role">Software Engineer · Back-End Laravel Specialist</div>
+        <p class="hero-sub">Building scalable backend systems, APIs, and enterprise solutions using Clean Architecture & SOLID principles.</p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary">
+            <span>View Projects</span>
+            <span>→</span>
+          </a>
+          <a href="https://github.com/eng-ziad-ragab" target="_blank" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+            GitHub
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">2+</div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div>
+            <div class="stat-num">4+</div>
+            <div class="stat-label">Enterprise Systems</div>
+          </div>
+          <div>
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Clean Architecture</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-wrap">
+        <div class="reveal">
+          <span class="section-tag">// About me</span>
+          <h2 class="section-title">Engineered for scale,<br>built for business</h2>
+        </div>
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <p>Back-End Software Engineer with <strong>2+ years of experience</strong> specializing in Laravel and PHP. I design and build scalable backend systems for ERP, accounting, delivery, and enterprise platforms.</p>
+            <p>I focus on <strong>performance optimization</strong>, clean architecture, and implementing complex business logic including payment flows, real-time systems, and API integrations.</p>
+            <p>My approach is simple: understand the business problem deeply, then architect a solution that will hold up at scale — not just pass the demo.</p>
+          </div>
+          <div class="about-highlights reveal">
+            <div class="highlight-item">
+              <div class="highlight-icon">⚡</div>
+              <div>
+                <h4>Performance Optimization</h4>
+                <p>Complex SQL query optimization and transaction management for high-load systems</p>
+              </div>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-icon">🏗️</div>
+              <div>
+                <h4>Clean Architecture</h4>
+                <p>Service, Repository & Factory patterns applied consistently across all projects</p>
+              </div>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-icon">🔗</div>
+              <div>
+                <h4>API & Integrations</h4>
+                <p>Payment gateways, Firebase real-time, Pusher, and third-party API design</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-wrap">
+        <div class="reveal">
+          <span class="section-tag">// Experience</span>
+          <h2 class="section-title">Where I've built things</h2>
+          <p class="section-desc">Hands-on engineering at product companies, solving real business challenges at scale.</p>
+        </div>
+        <div class="exp-timeline reveal">
+
+          <div class="exp-item">
+            <div class="exp-dot-wrap"><div class="exp-dot"></div></div>
+            <div class="exp-body">
+              <div class="exp-header">
+                <div>
+                  <div class="exp-company">Welyra</div>
+                  <div class="exp-role">Back-End Engineer · Laravel</div>
+                </div>
+                <div class="exp-date">2023 – Present</div>
+              </div>
+              <ul class="exp-list">
+                <li><span>Built a full <strong>Order Management System</strong> — cart, scheduling, discounts, and vendor substitutions</span></li>
+                <li><span>Integrated <strong>Paymob</strong> with advanced payment flows: authorization, capture, and refunds</span></li>
+                <li><span>Developed scalable APIs and <strong>real-time notifications</strong> using Firebase</span></li>
+                <li><span>Optimized complex <strong>SQL queries</strong> for production performance under load</span></li>
+                <li><span>Implemented <strong>wallet system</strong> with transaction ledger and balance management</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-dot-wrap"><div class="exp-dot" style="background:var(--accent2); box-shadow: 0 0 0 4px rgba(0,153,255,0.15)"></div></div>
+            <div class="exp-body">
+              <div class="exp-header">
+                <div>
+                  <div class="exp-company">Raito Tech</div>
+                  <div class="exp-role">Back-End Engineer · Laravel</div>
+                </div>
+                <div class="exp-date">2022 – 2023</div>
+              </div>
+              <ul class="exp-list">
+                <li><span>Developed <strong>ERP and backend systems</strong> using Laravel for enterprise clients</span></li>
+                <li><span>Built <strong>RESTful APIs</strong> consumed by mobile and web applications</span></li>
+                <li><span>Refactored legacy systems using <strong>clean architecture principles</strong></span></li>
+                <li><span>Applied design patterns and significantly improved <strong>database performance</strong></span></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-wrap">
+        <div class="reveal">
+          <span class="section-tag">// Projects</span>
+          <h2 class="section-title">Problems I've solved</h2>
+          <p class="section-desc">Not just features shipped — systems that solved real business problems at scale.</p>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- FEATURED -->
+          <div class="project-card featured reveal">
+            <div class="project-info">
+              <div class="project-num">01 · Featured</div>
+              <h3 class="project-title">Advanced Order System with Payment Authorization Flow</h3>
+              <div class="project-problem">Problem: E-commerce needed complex multi-vendor ordering with safe payment auth</div>
+              <p class="project-desc">Engineered a complete delivery platform backend handling the full order lifecycle — from cart to delivery confirmation — with a Paymob payment integration featuring real authorization/capture flows, not just simple charges.</p>
+              <div class="project-features">
+                <span class="feature-tag">Cart & Scheduling</span>
+                <span class="feature-tag">Discount Engine</span>
+                <span class="feature-tag">Vendor Substitution</span>
+                <span class="feature-tag">Wallet System</span>
+                <span class="feature-tag">Real-time Notifications</span>
+              </div>
+              <div class="project-stack">
+                <span class="stack-tag">Laravel</span>
+                <span class="stack-tag">Paymob API</span>
+                <span class="stack-tag">Firebase</span>
+                <span class="stack-tag">MySQL</span>
+                <span class="stack-tag">Pusher</span>
+              </div>
+            </div>
+            <div class="project-visual">
+              <div style="font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--muted); margin-bottom:14px; letter-spacing:0.08em;">SYSTEM ARCHITECTURE</div>
+              <div class="arch-diagram">
+                <div class="arch-layer l1">📱 API Layer (RESTful Endpoints)</div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-layer l2">⚙️ Service Layer (Business Logic)</div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-layer l3">🗄️ Repository Layer (Data Access)</div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-layer l4">💾 MySQL · Firebase · Paymob</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2 -->
+          <div class="project-card reveal">
+            <div class="project-num">02</div>
+            <h3 class="project-title">ERP & Accounting System</h3>
+            <div class="project-problem">Problem: Manual financial tracking across multiple business units</div>
+            <p class="project-desc">Full enterprise resource planning system with inventory management, financial ledger, and granular RBAC for department-level access control. Includes reporting engine with archived data access.</p>
+            <div class="project-features">
+              <span class="feature-tag">Inventory Tracking</span>
+              <span class="feature-tag">Financial Ledger</span>
+              <span class="feature-tag">RBAC Permissions</span>
+              <span class="feature-tag">Reports Engine</span>
+            </div>
+            <div class="project-stack">
+              <span class="stack-tag">Laravel</span>
+              <span class="stack-tag">SQL Server</span>
+              <span class="stack-tag">Livewire</span>
+            </div>
+          </div>
+
+          <!-- CARD 3 -->
+          <div class="project-card reveal">
+            <div class="project-num">03</div>
+            <h3 class="project-title">Maintenance & Asset Lifecycle System</h3>
+            <div class="project-problem">Problem: No centralized tracking for equipment and service trucks</div>
+            <p class="project-desc">Built a lifecycle management system for maintenance operations — tracking equipment state, scheduling service tasks, and managing a fleet of trucks with full audit history per asset.</p>
+            <div class="project-features">
+              <span class="feature-tag">Equipment Tracking</span>
+              <span class="feature-tag">Truck Fleet</span>
+              <span class="feature-tag">Lifecycle States</span>
+              <span class="feature-tag">Audit Trail</span>
+            </div>
+            <div class="project-stack">
+              <span class="stack-tag">Laravel</span>
+              <span class="stack-tag">MySQL</span>
+              <span class="stack-tag">REST API</span>
+            </div>
+          </div>
+
+          <!-- CARD 4 -->
+          <div class="project-card reveal">
+            <div class="project-num">04</div>
+            <h3 class="project-title">Transportation & Logistics Platform</h3>
+            <div class="project-problem">Problem: Fleet operations needed real-time visibility and route management</div>
+            <p class="project-desc">Backend platform for logistics operations — fleet tracking, driver assignment, route optimization logic, and delivery status reporting for operations teams.</p>
+            <div class="project-features">
+              <span class="feature-tag">Fleet Tracking</span>
+              <span class="feature-tag">Driver Assignment</span>
+              <span class="feature-tag">Route Logic</span>
+              <span class="feature-tag">Status Reporting</span>
+            </div>
+            <div class="project-stack">
+              <span class="stack-tag">Laravel</span>
+              <span class="stack-tag">Firebase</span>
+              <span class="stack-tag">MySQL</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-wrap">
+        <div class="reveal">
+          <span class="section-tag">// Architecture</span>
+          <h2 class="section-title">How I think about systems</h2>
+          <p class="section-desc">Architecture is not a nice-to-have. It's the difference between a system that scales and one that breaks.</p>
+        </div>
+
+        <div class="arch-principles">
+          <div class="principle-card reveal">
+            <div class="principle-icon">🧱</div>
+            <h3 class="principle-title">Clean Architecture</h3>
+            <p class="principle-desc">Clear separation of concerns across Application, Domain, and Infrastructure layers. Business logic never leaks into framework code.</p>
+          </div>
+          <div class="principle-card reveal">
+            <div class="principle-icon">📐</div>
+            <h3 class="principle-title">SOLID Principles</h3>
+            <p class="principle-desc">Every class has one reason to change. Interfaces over implementations. Dependency injection as a first-class citizen.</p>
+          </div>
+          <div class="principle-card reveal">
+            <div class="principle-icon">⚡</div>
+            <h3 class="principle-title">Query Performance</h3>
+            <p class="principle-desc">Eager loading, strategic indexing, and query analysis to eliminate N+1 problems. Transactions wrapped correctly for data integrity.</p>
+          </div>
+        </div>
+
+        <div class="patterns-row reveal">
+          <div class="pattern-pill">Service Pattern</div>
+          <div class="pattern-pill">Repository Pattern</div>
+          <div class="pattern-pill">Factory Pattern</div>
+          <div class="pattern-pill">Observer Pattern</div>
+          <div class="pattern-pill">Strategy Pattern</div>
+          <div class="pattern-pill">Dependency Injection</div>
+          <div class="pattern-pill">API Resources</div>
+          <div class="pattern-pill">Form Requests</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-wrap">
+        <div class="reveal">
+          <span class="section-tag">// Skills</span>
+          <h2 class="section-title">Technical stack</h2>
+        </div>
+
+        <div class="skills-grid">
+          <div class="skill-group reveal">
+            <div class="skill-group-title">// Backend</div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-name"><span>Laravel</span><span class="skill-level">Expert</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:95%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>PHP</span><span class="skill-level">Expert</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>REST API Design</span><span class="skill-level">Expert</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>Livewire</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="skill-group reveal">
+            <div class="skill-group-title">// Database</div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-name"><span>MySQL</span><span class="skill-level">Expert</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>SQL Server</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>Query Optimization</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>Transactions</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="skill-group reveal">
+            <div class="skill-group-title">// Integrations</div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-name"><span>Paymob (Payment)</span><span class="skill-level">Expert</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>Firebase</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:83%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>Pusher / WebSockets</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-name"><span>Git / GitHub</span><span class="skill-level">Advanced</span></div>
+                <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <div class="section-wrap">
+  
+        <div class="reveal">
+          <span class="section-tag">// Contact</span>
+          <h2 class="section-title">Let's build something</h2>
+        </div>
+  
+        <div class="contact-box reveal">
+  
+          <!-- LEFT SIDE -->
+          <div class="contact-left">
+            <h3 class="contact-title">
+              Open to new<br>opportunities
+            </h3>
+  
+            <p class="contact-sub">
+              Looking for backend engineering roles where architecture and clean code actually matter.
+            </p>
+  
+            <div class="contact-links">
+  
+              <!-- Gmail OPEN IN BROWSER -->
+              <a 
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=ziadragab00@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="contact-link"
+              >
+                <span class="contact-link-icon">✉️</span>
+                <span>ziadragab00@gmail.com</span>
+              </a>
+  
+              <!-- GitHub -->
+              <a 
+                href="https://github.com/eng-ziad-ragab" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="contact-link"
+              >
+                <span class="contact-link-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/>
+                  </svg>
+                </span>
+                <span>GitHub Profile</span>
+              </a>
+  
+              <!-- LinkedIn -->
+              <a 
+                href="https://www.linkedin.com/in/ziad-ragab-13a930268/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="contact-link"
+              >
+                <span class="contact-link-icon">💼</span>
+                <span>LinkedIn Profile</span>
+              </a>
+  
+            </div>
+          </div>
+  
+          <!-- RIGHT SIDE FORM -->
+          <div class="contact-form">
+  
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              <input id="name" class="form-input" type="text" placeholder="Your name">
+            </div>
+  
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input id="email" class="form-input" type="email" placeholder="your@email.com">
+            </div>
+  
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea id="message" class="form-textarea" placeholder="Tell me about the role or project..."></textarea>
+            </div>
+  
+            <a  href="https://mail.google.com/mail/?view=cm&fs=1&to=ziadragab00@gmail.com &su=&body=Hello Ziad, &body=" + document.getElementById('message').value + " &body=" + document.getElementById('name').value + " &body=" + document.getElementById('email').value 
+            target="_blank"
+            rel="noopener noreferrer"
+            class="form-submit">
+              Send Message →
+            </a>
+  
+          </div>
+  
+        </div>
+  
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>Built by <span>Ziad Ragab</span> · Back-End Engineer · Laravel Specialist</p>
+    </div>
+  </footer>
+
+  <script>
+    // ─── SCROLL REVEAL ───
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // ─── SKILL BAR ANIMATION ───
+    const skillObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const fills = entry.target.querySelectorAll('.skill-fill');
+          fills.forEach(fill => {
+            const target = fill.style.width;
+            fill.style.width = '0%';
+            setTimeout(() => { fill.style.width = target; }, 200);
+          });
+          skillObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.skill-group').forEach(g => skillObserver.observe(g));
+
+    // ─── BLOB PARALLAX ───
+    document.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      document.querySelector('.blob-1').style.transform = `translate(${x}px, ${y}px)`;
+      document.querySelector('.blob-2').style.transform = `translate(${-x}px, ${-y}px)`;
+    });
+
+    // ─── NAV ACTIVE STATE ───
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+      });
+    });
+  </script>
+</body>
+</html>
