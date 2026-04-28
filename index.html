@@ -20,6 +20,9 @@
       --text: #E8EDF5;
       --muted: #6B7A99;
       --card: #0F1926;
+      --font-body: 'DM Sans', sans-serif;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,9 +41,12 @@
       background-attachment: fixed;
       background-repeat: no-repeat;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
+      font-family: var(--font-body);
+      font-size: clamp(15px, 0.35vw + 14px, 17px);
+      line-height: 1.75;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
     }
 
@@ -86,8 +92,15 @@
     }
 
     /* ─── TYPOGRAPHY ─── */
-    h1, h2, h3, h4 { font-family: 'Syne', sans-serif; font-weight: 800; line-height: 1.1; }
-    code, .mono { font-family: 'DM Mono', monospace; }
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+    }
+    p, li { text-wrap: pretty; }
+    code, .mono { font-family: var(--font-mono); }
 
     /* ─── NAV ─── */
     nav {
@@ -285,15 +298,15 @@
       50% { opacity: 0.3; }
     }
     .hero-title {
-      font-size: clamp(3rem, 7vw, 6rem);
+      font-size: clamp(2.6rem, 6.2vw, 5.4rem);
       font-weight: 800;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.028em;
       margin-bottom: 8px;
       animation: fadeUp 0.8s ease 0.1s both;
     }
     .hero-title .accent { color: var(--accent); }
     .hero-role {
-      font-family: 'DM Mono', monospace;
+      font-family: var(--font-mono);
       font-size: clamp(0.9rem, 2vw, 1.1rem);
       color: var(--accent2);
       margin-bottom: 28px;
@@ -336,7 +349,8 @@
       font-size: clamp(1rem, 2vw, 1.2rem);
       color: var(--muted);
       max-width: 580px;
-      line-height: 1.8;
+      line-height: 1.85;
+      font-weight: 400;
       margin-bottom: 48px;
       animation: fadeUp 0.8s ease 0.3s both;
     }
@@ -410,11 +424,16 @@
       margin-bottom: 12px;
     }
     .section-title {
-      font-size: clamp(2rem, 4vw, 3rem);
-      letter-spacing: -0.03em;
+      font-size: clamp(1.9rem, 3.8vw, 2.8rem);
+      letter-spacing: -0.024em;
       margin-bottom: 16px;
     }
-    .section-desc { color: var(--muted); max-width: 520px; font-size: 1.05rem; }
+    .section-desc {
+      color: var(--muted);
+      max-width: 560px;
+      font-size: clamp(0.98rem, 0.5vw + 0.86rem, 1.08rem);
+      line-height: 1.78;
+    }
 
     /* ─── ABOUT ─── */
     #about { background: var(--surface); }
