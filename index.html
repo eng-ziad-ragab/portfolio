@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080C12" />
   <title>Ziad Ragab — Back-End Laravel Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +27,16 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
+      background-color: var(--bg);
+      --page-bg-shift: 0px;
+      --page-bg-x: 0px;
+      background-image:
+        linear-gradient(120deg, rgba(8,12,18,0.9) 0%, rgba(8,12,18,0.74) 42%, rgba(8,12,18,0.86) 100%),
+        url("./assets/hero-bg.png");
+      background-size: cover;
+      background-position: calc(50% + var(--page-bg-x)) calc(14% + var(--page-bg-shift));
+      background-attachment: fixed;
+      background-repeat: no-repeat;
       color: var(--text);
       font-family: 'DM Sans', sans-serif;
       font-size: 16px;
@@ -45,6 +55,17 @@
       opacity: 0.4;
     }
 
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 18%, rgba(0,229,160,0.18), transparent 24%),
+                  radial-gradient(circle at 86% 12%, rgba(0,153,255,0.14), transparent 20%),
+                  radial-gradient(circle at 50% 88%, rgba(124,58,237,0.1), transparent 22%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     /* ─── GLOW BLOBS ─── */
     .blob {
       position: fixed;
@@ -53,10 +74,16 @@
       opacity: 0.12;
       pointer-events: none;
       z-index: 0;
+      animation: float 10s ease-in-out infinite alternate;
     }
     .blob-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; }
     .blob-2 { width: 500px; height: 500px; background: var(--accent2); bottom: 10%; right: -150px; }
-    .blob-3 { width: 400px; height: 400px; background: var(--accent3); top: 50%; left: 40%; }
+    .blob-3 { width: 400px; height: 400px; background: var(--accent3); top: 50%; left: 40%; animation-delay: 0.5s; }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-34px); }
+    }
 
     /* ─── TYPOGRAPHY ─── */
     h1, h2, h3, h4 { font-family: 'Syne', sans-serif; font-weight: 800; line-height: 1.1; }
@@ -74,6 +101,16 @@
       background: rgba(8,12,18,0.7);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
+    }
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 110;
+      box-shadow: 0 0 20px rgba(0,229,160,0.45);
     }
     .nav-logo {
       font-family: 'Syne', sans-serif;
@@ -93,7 +130,8 @@
       text-transform: uppercase;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--accent); }
     .nav-cta {
       background: var(--accent);
       color: #000;
@@ -107,18 +145,120 @@
     }
     .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
 
+    .nav-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(13,20,32,0.95);
+      color: var(--text);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .nav-toggle:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .nav-toggle svg { width: 20px; height: 20px; }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,12,18,0.96);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 90;
+      backdrop-filter: blur(18px);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu-list {
+      display: grid;
+      gap: 24px;
+      text-align: center;
+    }
+    .mobile-menu-list a {
+      color: var(--text);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+    }
+
     /* ─── SECTIONS ─── */
-    section { position: relative; z-index: 1; }
+    section {
+      position: relative;
+      z-index: 1;
+      transform: translateX(var(--section-shift, 0px)) scale(var(--section-zoom, 1));
+      transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+    .cursor-glow {
+      position: fixed;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.35;
+      filter: blur(48px);
+      background: radial-gradient(circle, rgba(0,229,160,0.35) 0%, rgba(0,153,255,0.2) 35%, rgba(124,58,237,0.12) 60%, transparent 75%);
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s ease;
+    }
     .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
 
     /* ─── HERO ─── */
     #hero {
-      min-height: 100vh;
+      min-height: 120vh;
       display: flex;
       align-items: center;
-      padding: 120px 0 80px;
+      padding: 170px 0 120px;
+      overflow: hidden;
+      --hero-shift: 0px;
     }
-    .hero-inner { max-width: 900px; }
+    #hero .container {
+      max-width: 100%;
+      padding: 0 clamp(20px, 4vw, 72px);
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(106deg, rgba(8,12,18,0.46) 0%, rgba(8,12,18,0.2) 50%, rgba(8,12,18,0.42) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(124,58,237,0.26), transparent 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-inner {
+      max-width: min(1450px, 100%);
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-content {
+      min-width: 0;
+      max-width: 980px;
+      padding: clamp(22px, 3.2vw, 38px);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(160deg, rgba(13,20,32,0.72), rgba(13,20,32,0.55));
+      backdrop-filter: blur(8px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.38);
+      transform: scale(var(--hero-card-zoom, 1));
+      transform-origin: center;
+      transition: transform 0.35s ease-out;
+    }
     .hero-badge {
       display: inline-flex;
       align-items: center;
@@ -158,6 +298,39 @@
       color: var(--accent2);
       margin-bottom: 28px;
       animation: fadeUp 0.8s ease 0.2s both;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s ease 0.25s both;
+    }
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: rgba(17,24,39,0.62);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      text-decoration: none;
+      transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+    .meta-pill:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,229,160,0.45);
+      color: var(--text);
+    }
+    .meta-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.9;
     }
     .hero-sub {
       font-size: clamp(1rem, 2vw, 1.2rem);
@@ -640,16 +813,24 @@
       opacity: 0;
       transform: translateY(30px);
       transition: opacity 0.7s ease, transform 0.7s ease;
+      transition-delay: var(--reveal-delay, 0ms);
     }
     .reveal.visible {
       opacity: 1;
       transform: translateY(0);
     }
+    .reveal-rise { transform: translateY(28px) scale(0.98); }
+    .reveal-left { transform: translateX(-24px); }
+    .reveal-right { transform: translateX(24px); }
+    .reveal.visible.reveal-left,
+    .reveal.visible.reveal-right,
+    .reveal.visible.reveal-rise { transform: translate(0, 0) scale(1); }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 900px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
+      .nav-toggle { display: inline-flex; }
       .container { padding: 0 24px; }
       .about-grid, .contact-box { grid-template-columns: 1fr; gap: 40px; }
       .projects-grid { grid-template-columns: 1fr; }
@@ -658,11 +839,24 @@
       .skills-grid { grid-template-columns: 1fr; }
       .patterns-row { grid-template-columns: repeat(2, 1fr); }
       .hero-stats { gap: 28px; }
+      .hero-content { max-width: 100%; }
       .contact-box { padding: 36px 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .cursor-glow { display: none; }
+      section { transform: none !important; }
     }
   </style>
 </head>
 <body>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="scroll-progress" id="scrollProgress"></div>
 
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
@@ -679,15 +873,36 @@
       <li><a href="#skills">Skills</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Let's Talk</a>
+    <button class="nav-toggle" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-list">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
 
   <!-- HERO -->
   <section id="hero">
     <div class="container">
       <div class="hero-inner">
+        <div class="hero-content">
         <div class="hero-badge">Available for new opportunities</div>
         <h1 class="hero-title">Ziad <span class="accent">Ragab</span></h1>
-        <div class="hero-role">Software Engineer · Back-End Laravel Specialist</div>
+        <div class="hero-role">Back-End Software Engineer | Laravel & PHP Specialist</div>
+        <div class="hero-meta">
+          <span class="meta-pill"><span class="meta-icon">📍</span>Cairo, Egypt</span>
+          <a class="meta-pill" href="mailto:ziyadragab00@gmail.com"><span class="meta-icon">✉️</span>ziyadragab00@gmail.com</a>
+          <a class="meta-pill" href="https://github.com/eng-ziad-ragab" target="_blank" rel="noopener noreferrer"><span class="meta-icon">🐙</span>github.com/eng-ziad-ragab</a>
+          <a class="meta-pill" href="https://www.linkedin.com/in/ziad-ragab-13a930268/" target="_blank" rel="noopener noreferrer"><span class="meta-icon">💼</span>linkedin.com/in/ziad-ragab-13a930268</a>
+        </div>
         <p class="hero-sub">Building scalable backend systems, APIs, and enterprise solutions using Clean Architecture & SOLID principles.</p>
         <div class="hero-actions">
           <a href="#projects" class="btn-primary">
@@ -712,6 +927,7 @@
             <div class="stat-num">100%</div>
             <div class="stat-label">Clean Architecture</div>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -778,14 +994,15 @@
                   <div class="exp-company">Welyra</div>
                   <div class="exp-role">Back-End Engineer · Laravel</div>
                 </div>
-                <div class="exp-date">2023 – Present</div>
+                <div class="exp-date">2025 – Present</div>
               </div>
               <ul class="exp-list">
-                <li><span>Built a full <strong>Order Management System</strong> — cart, scheduling, discounts, and vendor substitutions</span></li>
-                <li><span>Integrated <strong>Paymob</strong> with advanced payment flows: authorization, capture, and refunds</span></li>
-                <li><span>Developed scalable APIs and <strong>real-time notifications</strong> using Firebase</span></li>
-                <li><span>Optimized complex <strong>SQL queries</strong> for production performance under load</span></li>
-                <li><span>Implemented <strong>wallet system</strong> with transaction ledger and balance management</span></li>
+                <li><span>Engineered a full-cycle <strong>Order Management System</strong> including cart, scheduling, discount engine, and vendor substitution logic serving thousands of daily transactions</span></li>
+                <li><span>Integrated <strong>Paymob</strong> with authorization, capture, void, and refund flows to reduce payment failures through safer fund handling</span></li>
+                <li><span>Built scalable <strong>RESTful APIs</strong> consumed by iOS, Android, and web clients with consistent OpenAPI-aligned contracts</span></li>
+                <li><span>Implemented real-time notifications and live order tracking via <strong>Firebase Cloud Messaging</strong> and <strong>Pusher WebSockets</strong></span></li>
+                <li><span>Designed and maintained a <strong>wallet system</strong> with complete transaction ledger, balance management, and rollback support</span></li>
+                <li><span>Optimized critical SQL queries and Eloquent calls by removing N+1 issues and applying strategic indexing</span></li>
               </ul>
             </div>
           </div>
@@ -798,13 +1015,14 @@
                   <div class="exp-company">Raito Tech</div>
                   <div class="exp-role">Back-End Engineer · Laravel</div>
                 </div>
-                <div class="exp-date">2022 – 2023</div>
+                <div class="exp-date">2024 – 2025</div>
               </div>
               <ul class="exp-list">
-                <li><span>Developed <strong>ERP and backend systems</strong> using Laravel for enterprise clients</span></li>
-                <li><span>Built <strong>RESTful APIs</strong> consumed by mobile and web applications</span></li>
-                <li><span>Refactored legacy systems using <strong>clean architecture principles</strong></span></li>
-                <li><span>Applied design patterns and significantly improved <strong>database performance</strong></span></li>
+                <li><span>Developed enterprise <strong>ERP backend systems</strong> with Laravel across inventory, HR, and financial modules</span></li>
+                <li><span>Built and documented <strong>RESTful APIs</strong> for mobile and web apps with stable JSON response and error standards</span></li>
+                <li><span>Refactored legacy monolithic code into layered architecture using <strong>Service, Repository, and Factory</strong> patterns</span></li>
+                <li><span>Improved database performance through query optimization, indexing strategy, and reliable transaction boundaries</span></li>
+                <li><span>Applied SOLID practices and code review standards to elevate team-wide code quality</span></li>
               </ul>
             </div>
           </div>
@@ -1127,12 +1345,7 @@
               <textarea id="message" class="form-textarea" placeholder="Tell me about the role or project..."></textarea>
             </div>
   
-            <a  href="https://mail.google.com/mail/?view=cm&fs=1&to=ziyadragab00@gmail.com &su=&body=Hello Ziad, &body=" + document.getElementById('message').value + " &body=" + document.getElementById('name').value + " &body=" + document.getElementById('email').value 
-            target="_blank"
-            rel="noopener noreferrer"
-            class="form-submit">
-              Send Message →
-            </a>
+            <button id="sendMessage" class="form-submit">Send Message →</button>
   
           </div>
   
@@ -1149,55 +1362,135 @@
   </footer>
 
   <script>
-    // ─── SCROLL REVEAL ───
     const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
+    reveals.forEach((el, index) => {
+      const delay = Math.min(index * 45, 540);
+      el.style.setProperty('--reveal-delay', `${delay}ms`);
+      if (index % 3 === 0) el.classList.add('reveal-left');
+      else if (index % 3 === 1) el.classList.add('reveal-rise');
+      else el.classList.add('reveal-right');
+    });
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, 80);
-          observer.unobserve(entry.target);
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1 });
-    reveals.forEach(el => observer.observe(el));
+    }, { threshold: 0.15 });
+    reveals.forEach((el) => revealObserver.observe(el));
 
-    // ─── SKILL BAR ANIMATION ───
-    const skillObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+    const animateObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const fills = entry.target.querySelectorAll('.skill-fill');
-          fills.forEach(fill => {
-            const target = fill.style.width;
-            fill.style.width = '0%';
-            setTimeout(() => { fill.style.width = target; }, 200);
+          const fills = entry.target.querySelectorAll('.skill-fill, .bar-fill');
+          fills.forEach((fill) => {
+            const width = fill.style.width;
+            if (width) fill.style.width = width;
           });
-          skillObserver.unobserve(entry.target);
+          animateObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.3 });
-    document.querySelectorAll('.skill-group').forEach(g => skillObserver.observe(g));
+    }, { threshold: 0.25 });
+    document.querySelectorAll('.skill-group, .hero-inner').forEach((el) => animateObserver.observe(el));
 
-    // ─── BLOB PARALLAX ───
+    const cursorGlow = document.getElementById('cursorGlow');
+    const useAdvancedPointer = window.matchMedia('(pointer: fine)').matches;
+    if (!useAdvancedPointer && cursorGlow) cursorGlow.style.display = 'none';
+
     document.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 20;
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
       document.querySelector('.blob-1').style.transform = `translate(${x}px, ${y}px)`;
       document.querySelector('.blob-2').style.transform = `translate(${-x}px, ${-y}px)`;
+      document.querySelector('.blob-3').style.transform = `translate(${x / 1.5}px, ${y / 1.5}px)`;
+      if (cursorGlow && useAdvancedPointer) {
+        cursorGlow.style.left = `${e.clientX}px`;
+        cursorGlow.style.top = `${e.clientY}px`;
+      }
     });
 
-    // ─── NAV ACTIVE STATE ───
     const sections = document.querySelectorAll('section[id]');
+    const swaySections = Array.from(sections).filter((section) => section.id !== 'hero');
     const navLinks = document.querySelectorAll('.nav-links a');
-    window.addEventListener('scroll', () => {
+    const mobileMenu = document.getElementById('mobileMenu');
+    const navToggle = document.querySelector('.nav-toggle');
+    const scrollProgress = document.getElementById('scrollProgress');
+    const heroSection = document.getElementById('hero');
+    const heroContent = document.querySelector('.hero-content');
+
+    const updateActiveLink = () => {
       let current = '';
-      sections.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      sections.forEach((section) => {
+        if (window.scrollY >= section.offsetTop - 140) current = section.id;
       });
-      navLinks.forEach(a => {
-        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+      navLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
       });
+    };
+    const updateScrollProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      scrollProgress.style.width = `${progress}%`;
+    };
+    const updateHeroParallax = () => {
+      if (!heroSection) return;
+      const rect = heroSection.getBoundingClientRect();
+      const view = window.innerHeight || 1;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const ratio = Math.max(-1, Math.min(1, (view * 0.5 - rect.top) / view));
+      const y = ratio * -34;
+      const x = Math.sin(scrollTop * 0.0032) * 12 + ratio * 9;
+      document.body.style.setProperty('--page-bg-shift', `${y}px`);
+      document.body.style.setProperty('--page-bg-x', `${x.toFixed(2)}px`);
+      if (heroContent) {
+        const zoom = 1 + (1 - Math.abs(ratio)) * 0.03;
+        heroContent.style.setProperty('--hero-card-zoom', `${zoom.toFixed(3)}`);
+      }
+    };
+    const updateSectionSway = () => {
+      const viewportCenter = window.innerHeight * 0.5;
+      swaySections.forEach((section, idx) => {
+        const rect = section.getBoundingClientRect();
+        const sectionCenter = rect.top + rect.height * 0.5;
+        const distance = (sectionCenter - viewportCenter) / (window.innerHeight || 1);
+        const intensity = Math.max(-1, Math.min(1, distance));
+        const direction = idx % 2 === 0 ? 1 : -1;
+        const shift = direction * intensity * 24;
+        const zoom = 1 + (1 - Math.abs(intensity)) * 0.02;
+        section.style.setProperty('--section-shift', `${shift}px`);
+        section.style.setProperty('--section-zoom', `${zoom.toFixed(3)}`);
+      });
+    };
+
+    window.addEventListener('scroll', () => {
+      updateActiveLink();
+      updateScrollProgress();
+      updateHeroParallax();
+      updateSectionSway();
+    });
+    updateActiveLink();
+    updateScrollProgress();
+    updateHeroParallax();
+    updateSectionSway();
+
+    navToggle.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.addEventListener('click', (event) => {
+      if (event.target === mobileMenu) mobileMenu.classList.remove('open');
+    });
+    document.querySelectorAll('.mobile-menu-list a').forEach((link) => {
+      link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+
+    document.getElementById('sendMessage').addEventListener('click', (event) => {
+      event.preventDefault();
+      const name = encodeURIComponent(document.getElementById('name').value.trim());
+      const email = encodeURIComponent(document.getElementById('email').value.trim());
+      const message = encodeURIComponent(document.getElementById('message').value.trim());
+      const subject = encodeURIComponent('Opportunity inquiry from portfolio');
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+      window.open(`mailto:ziyadragab00@gmail.com?subject=${subject}&body=${body}`, '_blank');
     });
   </script>
 </body>
